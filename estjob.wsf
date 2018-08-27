@@ -1,0 +1,383 @@
+<job id="EstJob">
+<!-- objcts -->
+<script language="JScript" src="lib/object.js"/>
+<script language="JScript" src="lib/excel.js"/>
+<script language="JScript" src="lib/esttable.js"/>
+<script language="JScript" src="lib/genre.js"/>
+<script language="JScript" src="lib/gatherer.js"/>
+<script language="JScript" src="lib/builder.js"/>
+<script language="JScript" src="lib/cmd.js"/>
+<script language="JScript" src="lib/packer.js"/>
+<script language="JScript" src="lib/filediver.js"/>
+<script language="JScript" src="lib/ident.js"/>
+<script language="JScript" src="lib/locker.js"/>
+<script language="JScript" src="lib/log.js"/>
+<!-- util funcs -->
+<script language="JScript" src="lib/date.js"/>
+<script language="JScript" src="lib/utf8rw.js"/>
+<script language="JScript" src="lib/misc.js"/>
+<script language="JScript" src="lib/debug.js"/>
+<script language="JScript">
+(function estjob(){
+
+var Help = function(){/*
+ 
+est: estcmd wrapper
+  usage 
+    list                     genre name の一覧表示
+    check     [genre name]   登録候補の表示
+    gather    [genre name]   登録から最終処理まで一括実行
+    purge     [genre name]   強制削除
+    regather  [genre name]   強制削除して再登録
+    reject    [prefix]       prefixに合致する文書の強制削除
+    optimize                 casketの最適化
+    build     [genre name]   Webメニュー構築
+    restore   [num]          num世代前からのcasket復旧
+    test      [path]         指定パスの登録が可能かテスト
+    unlock                   lock解除
+
+*/}.toString().replace(/function+\W+\*|\*\/}$/g, "").replace(/^\r\n|^\r|^\n/, "");
+
+var sTime = new Date;
+var logger = object(Log).init(WScript.StdOut,'info');
+print_header("est start");
+println(now());
+
+if(WScript.Arguments.length > 2 ||
+   WScript.Arguments.length == 0){
+   println("argument error");
+   println(Help);
+   return;
+}
+
+var est = object(EstTable).init(getFullName('est.xls'),logger);
+var config = est.load_config();
+
+var locker = object(Locker).init(config["BASEDIR"]+"\\"+config["TMP_FOLDER"]+"\\"+"lock",logger);
+if(!(locker.lock()) && WScript.Arguments(0) != 'unlock'){
+   println("already running");
+   return;
+}
+switch(WScript.Arguments(0)){
+    case 'list':
+        list();
+        break;
+    case 'gather':
+        if(gather()){
+            merge();
+            purge();
+            finalize();
+            build();
+            pack();
+        }
+        break;
+    case 'regather':
+        purge('force');
+        if(gather()){
+            merge();
+            finalize();
+            build();
+            pack();
+        }
+        break;
+    case 'check':
+        gather('check');
+        break;
+    case 'build':
+        build();
+        pack();
+        break;
+    case 'optimize':
+        optimize();
+        extkeys();
+        finalize();
+        break;
+    case 'purge':
+        purge('force');
+        finalize();
+        break;
+    case 'reject':
+        reject();
+        break;
+    case 'unlock':
+        break;
+    case 'test':
+        test();
+        break;
+    case 'help':
+        print(Help);
+        break;
+    default  :
+        println("argument error");
+        println(Help);
+        break;
+}
+locker.unlock();
+
+print_header("result");
+var nTime = new Date; 
+var sec = Math.round((nTime-sTime)/1000) % 60;
+var min = (Math.round((nTime-sTime)/1000)-sec) / 60;
+println("Time -->  "+min+"min "+sec+"sec");
+println("");
+return;
+
+// --- gather ---
+// 指定ジャンルシートのエントリ毎にインンデクス化
+function gather(check){
+    print_header("gather");
+    if(WScript.Arguments.length != 2){
+        println("argument error");
+        return false;
+    }
+    var genre_name = WScript.Arguments(1);
+    if(!est.genre_exists(genre_name)){
+        println("["+genre_name+"] does not exist");
+        return false;
+    }
+    var genre = est.get_genre(genre_name);
+
+    genre.each_entry(function(e){
+        print_mini_header("index "+e.indexName);
+
+        var g = object(Gatherer).init(config,logger);
+        g.regist_genre(genre_name);
+        g.regex(e.regex, e.exregex);
+        var fd = object(FileDiver).init(logger);
+        fd.set(e.dirPath, e.depth);
+
+        fd.enum_dir(function(file){
+            if((file.type == 'dir') && (file.depth == e.depth))
+                g.regist_dir(file.chain, file.path);
+            if((file.type == 'file') && (file.depth <= e.depth))
+                g.regist_file(file.chain, file.path);
+        });
+        if(check){
+            g.each_element(function(elem){ 
+                println(elem.name+" ["+elem.target.split("\n").length+"]"); 
+                //println(elem.target); 
+            });
+        } else {
+            g.gather();
+        }
+    });
+
+    var packer = object(Packer).init(config["BASEDIR"]+"\\"+config["PARTSDIR"],logger);
+    packer.timestamp(genre_name,now());
+    return true;
+}
+// --- build ---
+// 指定ジャンルシートのエントリ毎にクライアントメニューを構築
+function build(){
+    print_header("build");
+
+    var genre_name = WScript.Arguments(1);
+    var genre = est.get_genre(genre_name);
+    var builder = object(Builder).init(config,logger);
+
+    genre.each_entry(function(e){
+        print_mini_header("build "+e.indexName);
+
+        var fd = object(FileDiver).init(logger);
+        var pre_depth = 0;
+        builder.regex(e.regex, e.exregex);
+
+        builder.root_li_tag(e.indexName,e.dirPath);
+        builder.sub_ul_tag_start();
+
+        fd.set(e.dirPath, e.depth);
+        fd.enum_dir(function(file){
+            if((file.type == 'dir')){
+                if(!builder.match(file.path)) return;
+                switch(file.depth - pre_depth){
+                    case 1: //階層が下降 
+                        builder.sub_ul_tag_open();
+                        break;
+                    case 0 :
+                        break;
+                    default : //階層が上昇
+                        builder.sub_ul_li_tag_close(pre_depth-file.depth,pre_depth);
+                        break;
+                };
+                builder.sub_li_tag_open(file.name,file.path,file.depth);
+                if(!file.has_child || (file.depth == e.depth))
+                    builder.sub_li_tag_close();
+                pre_depth = file.depth;
+            }
+        });
+        builder.sub_ul_li_tag_close(pre_depth,pre_depth); //最終評価から閉じ切る
+        builder.sub_ul_tag_end();
+        builder.flush_sub_menu(genre_name);
+    });
+    builder.flush_root_menu(genre_name);
+    builder.flush_json(genre_name);
+    builder.flush_genre(genre_name);
+}
+// --- pack ---
+function pack(){
+    var packer = object(Packer).init(config["BASEDIR"]+"\\"+config["PARTSDIR"],logger);
+    var genre_list = [];
+    est.each_sheet(function(s){
+        genre_list.push(s.name);
+    });
+    packer.pack(genre_list);
+}
+// --- optimize ---
+// casketの最適化
+function optimize(){
+    print_mini_header("Optimize");
+    var cmd = object(Cmd).init(config,logger);
+    cmd.gradual(function(){print(".")});
+    cmd.exec(config["CMD_OPTIMIZE"]+" "+config["WORK"]); 
+    println("");
+}
+// --- extkeys ---
+function extkeys(){
+    print_mini_header("Extkeys");
+    var cmd = object(Cmd).init(config,logger);
+    cmd.gradual(function(){print(".")});
+    cmd.exec(config["CMD_EXTKEYS"]+" "+config["WORK"]); 
+    println("");
+}
+// --- purge ---
+function purge(force){
+    print_header("purge");
+    if(force) println("mode: force");
+    var genre_name = WScript.Arguments(1);
+    var genre = est.get_genre(genre_name);
+
+    var cmd = object(Cmd).init(config,logger);
+    if(force){
+        var out = cmd.exec("cmd /c rd /S /Q "+config["BASEDIR"]+"\\"+config['CASKET']+"\\"+genre_name); 
+        (out[1])? println(out[1]) : println("delete index["+genre_name+"]");
+
+        cmd.gradual(function(line){ print('.'); });
+    } else {
+        cmd.gradual(function(line){
+            var m = line.match(/\((.*)\): deleted\n/);
+            if(m) println("delete "+m[1]);
+        });
+    }
+    genre.each_entry(function(e){
+        print_mini_header("purge "+e.indexName);
+        var c = config["CMD_PURGE"]
+        if(force) c = c + " -fc"
+        c = c+" "+config["WORK"]+" \""+e.dirPath+"\""; 
+        cmd.exec(c); 
+        if(force) println("");
+    });
+}
+// --- reject ---
+function reject(){
+    print_header("reject");
+    var target = WScript.Arguments(1);
+    println("target ["+target+"]")
+
+    var cmd = object(Cmd).init(config,logger);
+    cmd.gradual(function(line){ print(line); });
+    cmd.exec(config["CMD_PURGE"]+" -fc "+config["PUBLISH"]+" \""+target+"\"");
+}
+// --- merge ---
+function merge(){
+    print_header("merge");
+    var genre = WScript.Arguments(1);
+    print("merge CASKET["+genre+"] -> work .. ");
+
+    var cmd = object(Cmd).init(config,logger);
+    var c = config["BASEDIR"]+"\\"+config["CMD_MERGE"]
+            +" "+config["WORK"]+" "+config["CASKET"]+"\\"+genre
+    var out = cmd.exec(c);
+    (out[1])? println(out[1]) : println("ok");
+}
+// --- finalize ---
+function finalize(){
+    print_header("finalize");
+    println("publishing .. ");
+    var cmd = object(Cmd).init(config,logger);
+    var c = "xcopy "+config["BASEDIR"]+"\\"+config['WORK']+" "+
+                 config["BASEDIR"]+"\\"+config['PUBLISH']+" "+
+                 "/S /E /H /C /Y /R";
+    var out = cmd.exec(c); // コマンド発行
+    (out[1])? println(out[1]) : println("ok");
+}
+// --- backup ---
+// 世代バックアップ
+function backup(){
+    //print_mini_header("backup");
+    //var fsys = WScript.CreateObject("Scripting.FileSystemObject");
+    //var dateFormat = new DateFormat("yyyyMMdd_HHmmss");
+    //var name = config['CASKET']+"_"+dateFormat.format(new Date());
+    //var gen = config['GEN_NUM']
+    //var cmd = object(Cmd).init(config,logger);
+    //var folder;
+
+    //this.dirObj = fsys.GetFolder(config['GEN_FOLDER']);
+    //if(dirObj.SubFolders.count >= gen){
+    //    println("Backup Generation count over");
+    //    var subfolders = new Enumerator(dirObj.SubFolders);
+    //    folder = subfolders.item(); // Win仕様上1番古いファイル名
+    //    println("Replace "+folder.name+" > "+name);
+    //    folder.move(config['GEN_FOLDER']+"\\"+name);
+    //}
+    //print("Backup "+name+" ")
+    //c = "xcopy "+config["BASEDIR"]+"\\"+config['CASKET']+" "+
+    //             config["BASEDIR"]+"\\"+config['GEN_FOLDER']+"\\"+name+"\\ "+
+    //             "/S /E /H /C /Y /R";
+    //var out = cmd.exec(c); // コマンド発行
+    //(out[1])? println(out[1]) : println("-> ok");
+}
+// --- restore ---
+// 世代リストア
+function restore(){
+    //print_mini_header("restore");
+    //if(WScript.Arguments.length != 2){
+    //   println("Argument ERROR");
+    //   return;
+    //}
+    //var gen = WScript.Arguments(1);
+
+    //var cmd,folder,newest;
+    //var fsys = WScript.CreateObject("Scripting.FileSystemObject");
+    //var cmd = object(Cmd).init(config,logger);
+    //var bkups = [];
+
+    //this.dirObj = fsys.GetFolder(config['GEN_FOLDER']);
+    //var subfolders = new Enumerator(dirObj.SubFolders);
+    //for (;!subfolders.atEnd(); subfolders.moveNext()){
+    //    bkups.unshift(subfolders.item().name);
+    //}
+    //// 一端作業カレントCASKETを削除する
+    //var out = cmd.exec("cmd /c rd /S /Q "+config["BASEDIR"]+"\\"+config['CASKET']); 
+    //(out[1])? println(out[1]) : println("Delete CASKET");
+    //var out = cmd.exec("mkdir "+config["BASEDIR"]+"\\"+config['CASKET']); 
+
+    //print("restore CASKET["+bkups[gen-1]+"] now ... ");
+    //var c = "xcopy "+config["BASEDIR"]+"\\"+config['GEN_FOLDER']+"\\"+bkups[gen-1]+" "+
+    //             config["BASEDIR"]+"\\"+config['CASKET']+"\\ "+"/S /E /H /C /Y /R";
+    //var out = cmd.exec(c); 
+    //(out[1])? println(out[1]) : println(" ok");
+}
+// --- list ---
+function list(){
+    print_mini_header("list");
+    est.each_sheet(function(s){
+        println(s.name);
+    });
+}
+// --- test ---
+function test(path){
+    if(WScript.Arguments.length != 2){
+       println("Argument ERROR");
+       return;
+    }
+    print_mini_header("test");
+    var g = object(Gatherer).init(config,logger);
+    var cmd = object(Cmd).init(config,logger);
+    g.test(WScript.Arguments(1).replace(/(.+)[\\\/]$/,'$1'));
+    var out = cmd.exec("cmd /c rd /S /Q "+config["BASEDIR"]+"\\"+config["TMP_FOLDER"]+"\\"+"casket_test");
+}
+
+})();
+
+</script>
+</job>

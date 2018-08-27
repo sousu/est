@@ -1,0 +1,433 @@
+
+/*::: est css :::::::::::::::::::::::::::::::::::::::::::*/
+
+/*::: base ::::::::::::::::::::::::::::::::::::::::::::::*/
+* {
+    margin:0;
+    padding:0;
+}
+body {
+    color:#111;
+    font-family:verdana,arial,helvetica,Sans-Serif;
+    /* IE_Firefoxで要整合*/
+    font-size:10px;
+    line-height:175%; 
+    text-align:left;
+}
+ul, ol {
+    /*list-style-image:none;
+    list-style-position:outside;
+    list-style-type:none;*/
+}
+a{
+    color: #111;
+    text-decoration:underline;
+}
+#main{
+    margin:0 auto;
+    width:700px;
+}
+
+/*::: head :::::::::::::::::::::::*/
+/* --- normal ---*/
+#estinfo{
+    text-align:center;
+    font-size:11px;
+    padding:10px;
+    color:#eee;
+    background: #777;
+}
+#estinfo a{
+    color:#eee;
+}
+#submittool {
+    float: right;
+    position: relative;
+    width:100px;
+    right: 65px;
+    text-align: left;
+    height:32px;
+}
+#submittool img {
+    border: none;
+}
+#submittool a.submitter {
+    margin-right:5px;
+}
+#submittool a.order {
+    position: relative;
+    top: -4px;
+}
+#submittool a.order img {
+    opacity: 0.2;
+    filter: alpha(opacity=20);
+    -ms-filter: "alpha(opacity=20)";
+    -moz-opacity: 0.2;
+}
+#submittool a.order img.selected-order {
+    opacity: 1;
+    filter: alpha(opacity=100);
+    -ms-filter: "alpha(opacity=100)";
+    -moz-opacity: 100;
+}
+#form_self{
+    position:absolute;
+    top:72px;
+    width:700px;
+}
+div.form_basic{
+    text-align:center;
+    margin-bottom:19px;
+}
+div.form_basic input#phrase{
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+    border-color: -moz-use-text-color;
+    border-image: none;
+    border-style: none none dotted;
+    border-width: medium medium 1px;
+    font-size: 120%;
+    height: 25px;
+    line-height: 26px;
+    margin-left: 90px;
+    padding-left: 5px;
+    text-align: left;
+    width: 350px;
+}
+div.form_basic input#search{
+    /*IE submit対策*/
+    width:0;
+    position:absolute;
+    left:-9999px;
+}
+div.genres{
+    /*background: url(/est/res/img/info.gif) no-repeat scroll left bottom;*/
+    text-align:center;
+    display:block;
+    height:31px;
+    margin-bottom:4px;
+}
+div.genres a.genre_link,
+div.genres span{
+    /*
+    background: none repeat scroll 0 0 #f0f0f0;
+    border-radius: 4px;
+    -moz-border-radius: 4px;/*for Firefox
+    -webkit-border-radius: 4px;/*for Safari and chrome
+    */
+    background: #FFFFFF;
+    border: 1px solid #777777;
+    line-height: 28px;
+    list-style: none outside none;
+    padding: 5px 10px;
+    text-decoration: none;
+}
+div.genres a.selected{
+    background: none repeat scroll 0 0 #777777;
+    color: #FFFFFF;
+}
+div.genres a.genre_ctrl{
+}
+div.form_extension{
+    color: #fff;
+    clear:both;
+    padding:3px 10px;
+    display:none;
+}
+/* --- main_menu --- */
+div#scroll{
+    _margin-top:6px; /* for IE6 */
+}
+ul.roots li{
+    list-style:none;
+    margin-top:5px;
+    width: auto;
+}
+ul.roots label{
+    cursor:pointer;
+}
+ul.roots input{
+    height:21px; /* for ie(ja)-firefox */
+    margin-right:5px;
+}
+/* --- advanced --- */
+div.form_advanced{
+    padding:150px 20px 0px;
+}
+/* --- logo --- */
+div.logo{
+    text-align:center;
+    line-height: 200%;
+    margin-top:33%;
+    width:700px;
+}
+div.chink {
+    margin-top:-13px;
+}
+div.logo a{
+    text-decoration:none;
+    border-bottom:dashed 1px #ccc;
+}
+div.logo h4{
+    font-size:140%;
+    margin-bottom:13px;
+}
+div.logo ul{
+    list-style:none;
+}
+#sikumi {
+    display:none;
+    width: 100%;
+    height: 280px;
+    background: url(/est/res/img/sikumi.png) no-repeat scroll center top;
+}
+/* --- dynamic change --- */
+label.checked {
+    color:#590!important;
+}
+label.referrd {
+    color:#15a;
+}
+span.pop_button.void {
+    visibility:hidden;
+}
+li.quickmenuitem div.showchild.void {
+    visibility:hidden;
+}
+span.down{
+    background-image:url(/est/res/img/ar_down.png)!important;
+}
+
+/*::: quickmenu :::::::::::::::::::::::::::::::*/
+
+/* see also quickmenu.css */
+
+.quickmenu .parentLink:hover {
+    background-color: #f6f6f6;
+}
+span.quickmenu_pop {
+    background-image:url(/est/res/img/ar.png);
+    background-position: center center;
+    background-repeat:no-repeat;
+    cursor:pointer;
+    height:auto;
+    width:20px;
+    margin-right:5px;
+}
+div#menu{
+    display:none;
+}
+
+/*::: result :::::::::::::::::::::::::::::::*/
+#resultframe {
+    margin-top:180px;
+    z-index:1!important;
+}
+.estresult {
+    line-height:155%;
+    text-align:left;
+    width:700px;
+}
+.estresult div.resinfo{
+    background: none repeat scroll 0 0 #777777;
+    color: #FFFFFF !important;
+    padding: 10px 0;
+    position: absolute;
+    text-align: center;
+    top: 0;
+    width: 700px;
+}
+.estresult div.resinfo strong{
+}
+.estresult p.note{
+    color:#108AA0;
+    font-size:120%;
+    font-weight:bold;
+    padding:5% 15px;
+    text-align:center;
+}
+.estresult div.hints{
+    position:absolute;
+    right:0px;
+    top:-20px;
+    color:#aaa;
+    text-align:right;
+}
+.estresult dl.doc{
+    margin-bottom:30px;
+}
+dt{
+    padding-bottom:10px;
+}
+dd{
+}
+.estresult dl.doc dt a{
+    font-size:120%;
+    font-weight:bold;
+    padding-bottom:3px;
+}
+.estresult dl.doc dt span.doc_score{
+    color:#AAAAAA;
+}
+.estresult .doc_attr{
+    margin-right:15px;
+    font-size:105%;
+    float: left;
+}
+.estresult .doc_attr_mdate{
+}
+.estresult dl.doc dd.doc_text{
+    clear: both;
+    padding:8px 0;
+    /*background: url(/est/res/img/hukidasi.gif) no-repeat scroll left top;*/
+    color:#6d6d6d;
+}
+.estresult dl.doc dd.doc_navi{
+    /*background: url(/est/res/img/hukidasi2.gif) no-repeat scroll left bottom;*/
+    color:#559900;
+}
+.estresult dl.doc dd.doc_navi a{
+    color: #15a;
+    text-decoration: none;
+}
+div .paging{
+    font-size:110%;
+    padding:10px 0 20px;
+    text-align:center;
+}
+div .paging a{
+}
+
+/* --- file extenciton icon ----*/
+.estresult dl.doc dt a[href $='.pdf'],
+.estresult dl.doc dt a[href $='.PDF']{
+    padding-left: 23px;
+    background: transparent url(/est/res/img/pdf.gif) no-repeat center left; 
+}
+.estresult dl.doc dt a[href $='.doc'],
+.estresult dl.doc dt a[href $='.DOC'],
+.estresult dl.doc dt a[href $='.docx'],
+.estresult dl.doc dt a[href $='.DOCX']{
+    padding-left: 23px;
+    background: transparent url(/est/res/img/doc.gif) no-repeat center left; 
+}
+.estresult dl.doc dt a[href $='.xls'],
+.estresult dl.doc dt a[href $='.XLS'],
+.estresult dl.doc dt a[href $='.xlsx'],
+.estresult dl.doc dt a[href $='.XLSX']{
+    padding-left: 23px;
+    background: transparent url(/est/res/img/xls.gif) no-repeat center left; 
+}
+.estresult dl.doc dt a[href $='.ppt'],
+.estresult dl.doc dt a[href $='.PPT'],
+.estresult dl.doc dt a[href $='.pptx'],
+.estresult dl.doc dt a[href $='.PPTX']{
+    padding-left: 23px;
+    background: transparent url(/est/res/img/ppt.gif) no-repeat center left; 
+}
+.estresult dl.doc dt a[href $='.txt'],
+.estresult dl.doc dt a[href $='.TXT'],
+.estresult dl.doc dt a[href $='.csv'],
+.estresult dl.doc dt a[href $='.CSV']{
+    padding-left: 23px;
+    background: transparent url(/est/res/img/txt.gif) no-repeat center left; 
+}
+.estresult dl.doc dt a[href $='.jtd'],
+.estresult dl.doc dt a[href $='.JTD']{
+    padding-left: 23px;
+    background: transparent url(/est/res/img/jtd.gif) no-repeat center left; 
+}
+.estresult dl.doc dt a[href $='.msg'],
+.estresult dl.doc dt a[href $='.MSG']{
+    padding-left: 23px;
+    background: transparent url(/est/res/img/mail.png) no-repeat center left; 
+}
+/* --- keyward color ---------- */
+.estresult dl.doc dd.doc_text strong.key{
+    background-color:#F2F2F2;
+    color:#333333;
+    font-weight:bold;
+}
+.estresult dl.doc dd.doc_text strong.key1{
+    color:#006699;
+}
+.estresult dl.doc dd.doc_text strong.key2{
+    color:#aa3300;
+}
+.estresult dl.doc dd.doc_text strong.key3{
+    color:#229999;
+}
+.estresult dl.doc dd.doc_text strong.key4{
+    color:#339900;
+}
+
+
+/*::: help :::::::::::::::::::::::::::::::*/
+.help{
+    background:#FFFFFF none repeat scroll 0 0;
+    margin:4px auto;
+    position:absolute;
+    left:0.4%;
+    top:160px;
+    padding-bottom:20px;
+    text-align:left;
+    width:99%;
+}
+.help p{
+    font-size:90%;
+    line-height:155%;
+    padding:3px 110px;
+}
+.help p.rel{
+    background:transparent url(/est/res/img/gaiyou.png) no-repeat scroll 0 0;
+    margin:10px auto 10px 110px;
+    height:390px
+}
+.help h1{
+    background:transparent url(/est/res/img/h3.png) no-repeat scroll 0 0;
+    font-size:120%;
+    font-weight:bold;
+    margin:35px 105px 10px;
+    height:31px;
+}
+.help h2{
+    background:transparent url(/est/res/img/h4.gif) no-repeat scroll 0 0;
+    font-size:110%;
+    height:22px;
+    line-height:1.7em;
+    margin:20px 110px;
+    padding-left:25px;
+}
+.help h3{
+    font-size:135%;
+    font-weight:bold;
+    padding:10px 45px;
+}
+.help h4{
+    font-size:125%;
+    font-weight:bold;
+    padding:10px 45px;
+}
+.help ul{
+    font-size:90%;
+    padding:0 140px;
+    line-height:170%;
+}
+/*::: foot ::::::::::::::::::::::::::::::::*/
+.foot {
+    text-align: center;
+    background:#fff url(/est/res/img/foot.gif) no-repeat scroll center bottom;
+    color:#fff;
+    height:60px;
+}
+.foot a{
+    color: #fff;
+}
+.foot span{
+    position:relative;
+    top:20px;
+}
+
+

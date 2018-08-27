@@ -1,0 +1,22 @@
+## .gitignore ##
+# ignore all
+/*
+
+# allow
+!/casket_publish/parts/empty
+!/casket_work/empty
+!/lib/
+!/log/empty
+!/res/
+!/script/
+!/tmp/empty
+!/tool/get_msg.js
+
+!/.gitignore
+!/est_tmpl.xls
+!/estjob.wsf
+!/estseek_tmpl.conf
+!/favicon.ico
+!/README.md
+!/TODO.md
+

@@ -1,0 +1,95 @@
+/*
+** Silver Pride Software Limited
+** (c) 2008 - All rights reserved
+**
+** http://www.silver-pride.com
+*/
+
+/* --- pane --- */
+.quickmenu {
+	width:450px; 
+    height: 335px;
+    text-align:left;
+    float:left;
+	z-index: 10!important;
+    clear:both;
+    position:absolute;
+    top:115px;
+    left:-9999px;
+	background: url("/est/res/img/w_tr.png") repeat;
+	border:solid 1px #777;
+	margin: 0;
+}
+.quickmenu #menuholder{
+	overflow: hidden;
+    float:none;
+    padding:10px;
+}
+.quickmenu .quickmenupane{
+    position: absolute;
+	overflow: auto;
+	z-index: 100!important;
+}
+.quickmenupane{
+    height:314px;
+}
+.quickmenu .quickmenupane li{
+    width: 430px; /*pane全体からScroll分減*/
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.quickmenu .quickmenupane li a{
+    text-decoration: none;
+}
+
+/* --- Items ---*/
+.quickmenu .quickmenuitem .item{
+    width: 400px; /* li要素からボタン分減*/
+	float: left;
+	cursor: pointer;
+    line-height: 20px;
+    min-height:25px;
+}
+.quickmenu .quickmenuitem .item input{
+    position:relative;
+    top:3px;
+    margin-right:5px;
+}
+.quickmenu .quickmenuitem{
+    font-weight: normal;
+    background-repeat:0 2px;
+}
+.quickmenu .quickmenuitem .item:hover{
+    background-color: #f3f3f3;
+    text-decoration: none;
+}
+.quickmenu .quickmenuitem-haschildren{
+	/*font-weight: bold;*/
+}
+.quickmenu .parentLink{
+	font-weight: bold;
+    color: #069;
+    line-height: 20px;
+    background-image: url(/est/res/img/quickmenu-up.gif);
+    background-position: center left;
+    background-repeat: no-repeat;
+    border-bottom: solid 1px #ccc;
+    margin: 0 5px 10px 0px;
+    padding: 3px 5px 5px 20px;
+    cursor: pointer;
+}
+.quickmenu .showchild{
+	width: 30px;
+	height: 23px;
+    background-image: url(/est/res/img/quickmenu-next.gif);
+	background-repeat: no-repeat;
+    background-position:6px 2px;
+	cursor: pointer;
+	float: right;
+}
+.quickmenu .showchild:hover{
+    background-color: #f3f3f3;
+    text-decoration: none;
+}
+
