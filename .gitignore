@@ -11,6 +11,7 @@
 !/script/
 !/tmp/empty
 !/tool/get_msg.js
+!/tool/estseek.c.diff
 
 !/.gitignore
 !/est_tmpl.xls

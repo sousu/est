@@ -1,0 +1,127 @@
+--- c:\MinGW\msys\1.0\home\sousu\hyperestraier-1.4.13\estseek.c.org	Thu Apr 12 10:52:50 2007
++++ c:\MinGW\msys\1.0\home\sousu\hyperestraier-1.4.13\estseek.c	Sun Aug 09 05:09:11 2015
+@@ -1136,9 +1136,10 @@ static void showadvancedform(void){
+ 
+ /* show the normal form */
+ static void showformnormal(void){
+-  xmlprintf("<div id=\"estform\" class=\"estform\">\n");
+-  xmlprintf("<form action=\"%@\" method=\"get\" id=\"form_self\">\n", g_scriptname);
+-  shownaviform();
++  // Formシンプル化のため削除 ---
++  //xmlprintf("<div id=\"estform\" class=\"estform\">\n");
++  //xmlprintf("<form action=\"%@\" method=\"get\" id=\"form_self\">\n", g_scriptname);
++  //shownaviform();
+   if(p_navi == NM_ADVANCED){
+     showadvancedform();
+   } else {
+@@ -1231,8 +1232,9 @@ static void showformnormal(void){
+       xmlprintf("</div>\n");
+     }
+   }
+-  xmlprintf("</form>\n");
+-  xmlprintf("</div>\n");
++  // Formシンプル化のため削除 ---
++  //xmlprintf("</form>\n");
++  //xmlprintf("</div>\n");
+ }
+ 
+ 
+@@ -1657,7 +1659,11 @@ static void showdoc(ESTDOC *doc, const C
+   CBMAP *kwords;
+   CBLIST *names, *lines;
+   const char *uri, *title, *score, *val, *name, *line, *cname;
++  // REALPATH表示用/mdate表示用変数追加 ---
++  const char *real, *mdate;
+   char *turi, *tsv, *pv, *str, numbuf[NUMBUFSIZ];
++  // REALPATH表示用変数追加 ---
++  char *treal;
+   int i, id, wwidth, hwidth, awidth;
+   id = est_doc_id(doc);
+   if(g_showlreal){
+@@ -1665,6 +1671,9 @@ static void showdoc(ESTDOC *doc, const C
+       uri = ".";
+   } else {
+     if(!(uri = est_doc_attr(doc, ESTDATTRURI))) uri = ".";
++    // URI時もREALPATHを確保 ---
++    if(!(real = est_doc_attr(doc, DATTRLREAL))) treal = "."; 
++    treal = makeshownuri(real);
+   }
+   turi = makeshownuri(uri);
+   if(!(title = est_doc_attr(doc, ESTDATTRTITLE))) title = "";
+@@ -1674,11 +1683,11 @@ static void showdoc(ESTDOC *doc, const C
+   if(!(score = est_doc_attr(doc, DATTRSCORE))) score = "";
+   xmlprintf("<dl class=\"doc\" id=\"doc_%d\">\n", id);
+   xmlprintf("<dt>");
+-  xmlprintf("<a href=\"%@\" class=\"doc_title\">", turi);
++  xmlprintf("<a href=\"%@\" target=\"_blank\" class=\"doc_title\">", turi);  // target変更 ---
+   sprintf(numbuf, "%%%d@", detail ? 9999 : g_attrwidth);
+   xmlprintf(numbuf, title);
+   xmlprintf("</a>");
+-  if(score[0] != '\0' && p_detail < 1) xmlprintf(" <span class=\"doc_score\">%@</span>", score);
++  if(score[0] != '\0' && p_detail < 1) xmlprintf(" <span class=\"doc_score\"> \(%@\)</span>", score);  // score表示変更 ---
+   xmlprintf("</dt>\n");
+   if(detail){
+     names = est_doc_attr_names(doc);
+@@ -1714,7 +1723,8 @@ static void showdoc(ESTDOC *doc, const C
+         *pv = '\0';
+         pv++;
+         if((val = est_doc_attr(doc, str)) != NULL && val[0] != '\0'){
+-          xmlprintf("<dd class=\"doc_attr\">");
++          // classを個別化 ---
++          xmlprintf("<dd class=\"doc_attr doc_attr_%$\">", str);
+           xmlprintf("%@: <span class=\"doc_val doc_val_%$\">", pv, str);
+           sprintf(numbuf, "%%%d@", g_attrwidth);
+           xmlprintf(numbuf, val);
+@@ -1760,13 +1770,17 @@ static void showdoc(ESTDOC *doc, const C
+   xmlprintf("<dd class=\"doc_navi\">\n");
+   xmlprintf("<span class=\"doc_link\">");
+   sprintf(numbuf, "%%%d@", detail ? 9999 : g_attrwidth);
+-  xmlprintf(numbuf, turi);
++  // URI時もREALPATHにて表示 ---
++  if(g_showlreal){ xmlprintf(numbuf, turi);
++  } else {         xmlprintf(numbuf, treal);
++  }
+   xmlprintf("</span>\n");
++  xmlprintf("<br>\n");
+   if(*g_dispproxy != '\0'){
+     if(!strcmp(g_dispproxy, "[URI]")){
+-      xmlprintf("- <a href=\"%s", turi);
++      xmlprintf("<a id=\"doc_detail\" href=\"%s", turi);
+     } else {
+-      xmlprintf("- <a href=\"%s?url=%?", g_dispproxy, turi);
++      xmlprintf("<a href=\"%s?url=%?", g_dispproxy, turi);
+     }
+     for(i = 0; i < cblistnum(words); i++){
+       xmlprintf("&amp;word%d=%?", i + 1, cblistval(words, i, NULL));
+@@ -1774,16 +1788,19 @@ static void showdoc(ESTDOC *doc, const C
+     xmlprintf("&amp;once=1\" class=\"display\">[display]</a>\n");
+   }
+   if(g_candetail)
+-    xmlprintf("- <a href=\"%@?navi=%d&amp;phrase=%?&amp;detail=%d&amp;perpage=%d&amp;clip=%d"
++    xmlprintf("<a href=\"%@?navi=%d&amp;phrase=%?&amp;detail=%d&amp;perpage=%d&amp;clip=%d"
+               "&amp;qxpnd=%d&amp;gmasks=%d&amp;prec=%d\" class=\"detail\">[detail]</a>\n",
+               g_scriptname, p_navi, p_similar > 0 ? "" : p_phrase, id,
+               p_perpage, p_clip, p_qxpnd, p_gmasks, p_prec);
+   if(g_smlrvnum > 0)
+-    xmlprintf("- <a href=\"%@?navi=%d&amp;similar=%d&amp;perpage=%d&amp;clip=%d&amp;qxpnd=%d"
++    xmlprintf("<a href=\"%@?navi=%d&amp;similar=%d&amp;perpage=%d&amp;clip=%d&amp;qxpnd=%d"
+               "&amp;gmasks=%d&amp;prec=%d\" class=\"similar\">[similar]</a>\n",
+               g_scriptname, p_navi, id, p_perpage, p_clip, p_qxpnd, p_gmasks, p_prec);
+   if(g_candir){
+-    str = cbmemdup(turi, -1);
++    // URI時もREALPATHにて表示 ---
++    if(g_showlreal){ str = cbmemdup(turi, -1);
++    } else {         str = cbmemdup(treal, -1);
++    }
+     if((str[0] == '\\' && str[1] == '\\') ||
+        (((str[0] >= 'A' && str[1] <= 'Z') || (str[0] >= 'a' && str[1] <= 'z')) &&
+         str[1] == ':' && str[2] == '\\')){
+@@ -1791,7 +1808,7 @@ static void showdoc(ESTDOC *doc, const C
+     } else if((pv = strrchr(str, '/')) != NULL){
+       pv[1] = '\0';
+     }
+-    xmlprintf("- <a href=\"%@\" class=\"dir\">[dir]</a>\n", str);
++    xmlprintf("<a href=\"%@\" class=\"dir\">[dir]</a>\n", str);
+     free(str);
+   }
+   xmlprintf("</dd>\n");
