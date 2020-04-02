@@ -140,6 +140,9 @@ div.form_extension{
 div#scroll{
     _margin-top:6px; /* for IE6 */
 }
+ul.roots {
+    width: max-content;
+}
 ul.roots li{
     list-style:none;
     margin-top:5px;
