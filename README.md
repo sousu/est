@@ -6,7 +6,7 @@ HyperEstraier のラッパーコマンド及び Webビュー自動生成ツー�
 ### 導入
 
  - HyperEstraierのパッケージの構成にまるごとコピー
- - ``estseek.c``に``tool/estseek.c.diff``でパッチ当て
+ - ``estseek.c``に``tool/estseek.c.diff``でパッチ当てし``estseek.cgi``は再ビルド
  - apacheを設定
  - ジャンクション設定``mklink /J C:\path\to\htdocs\est C:\path\to\develop\est``
 
