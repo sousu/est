@@ -149,6 +149,7 @@ ul.roots li{
 }
 ul.roots label{
     cursor:pointer;
+    margin-left:2px;
 }
 ul.roots input{
     height:21px; /* for ie(ja)-firefox */
