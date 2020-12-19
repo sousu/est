@@ -9,8 +9,7 @@
 body {
     color:#111;
     font-family:verdana,arial,helvetica,Sans-Serif;
-    /* IE_Firefoxで要整合*/
-    font-size:10px;
+    font-size:12px;
     line-height:175%; 
     text-align:left;
 }
@@ -138,14 +137,14 @@ div.form_extension{
 }
 /* --- main_menu --- */
 div#scroll{
-    _margin-top:6px; /* for IE6 */
+    height: 35px;
 }
 ul.roots {
     width: max-content;
 }
 ul.roots li{
     list-style:none;
-    margin-top:5px;
+    margin-top:6px;
     width: auto;
 }
 ul.roots label{

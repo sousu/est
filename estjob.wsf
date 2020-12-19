@@ -24,14 +24,14 @@ var Help = function(){/*
  
 est: estcmd wrapper
   usage 
-    list                     genre name ‚Ìˆê——•\Ž¦
-    check     [genre name]   “o˜^Œó•â‚Ì•\Ž¦
-    gather    [genre name]   “o˜^‚©‚çÅIˆ—‚Ü‚ÅˆêŠ‡ŽÀs
-    purge     [genre name]   ‹­§íœ
-    regather  [genre name]   ‹­§íœ‚µ‚ÄÄ“o˜^
+    list                     genre‚Ìˆê——•\Ž¦
+    check     [genre]        “o˜^Œó•â‚Ì•\Ž¦
+    gather    [genre]        “o˜^‚©‚çÅIˆ—‚Ü‚ÅˆêŠ‡ŽÀs
+    purge     [genre]        ‹­§íœ
+    regather  [genre]        ‹­§íœ‚µ‚ÄÄ“o˜^
     reject    [prefix]       prefix‚É‡’v‚·‚é•¶‘‚Ì‹­§íœ
     optimize                 casket‚ÌÅ“K‰»
-    build     [genre name]   Webƒƒjƒ…[\’z
+    build     [genre]        Webƒƒjƒ…[\’z
     restore   [num]          num¢‘ã‘O‚©‚ç‚Ìcasket•œ‹Œ
     test      [path]         Žw’èƒpƒX‚Ì“o˜^‚ª‰Â”\‚©ƒeƒXƒg
     unlock                   lock‰ðœ
@@ -45,7 +45,6 @@ println(now());
 
 if(WScript.Arguments.length > 2 ||
    WScript.Arguments.length == 0){
-   println("argument error");
    println(Help);
    return;
 }

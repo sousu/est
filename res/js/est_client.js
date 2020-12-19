@@ -1,5 +1,4 @@
-﻿
-// est_client.js
+﻿// est_client.js
 
 if (!('console' in window)) { // for IE
     window.console = {};
@@ -22,11 +21,6 @@ jQuery(function($){
         var m = txt.match(/with ([0-9]+) documents and ([0-9]+)/);
         estinfo = m[1]+"文書 / "+m[2]+"単語";
         return "　";
-    });
-    // --- logo ---
-    $("a.sikumi").click(function () {
-        $("#sikumi").toggle();
-        $("div.logo").toggleClass("chink");
     });
     // --- genre load ---
     $('div.genres').load(parts+'genre',function(){

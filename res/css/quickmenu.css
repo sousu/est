@@ -54,7 +54,8 @@
 .quickmenu .quickmenuitem .item input{
     position:relative;
     top:3px;
-    margin-right:5px;
+    margin-right:6px;
+    margin-left:3px;
 }
 .quickmenu .quickmenuitem{
     font-weight: normal;
