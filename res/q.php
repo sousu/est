@@ -1,10 +1,10 @@
 <html>
 <head>
 <?php
-print "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=shift_jis\" />";
-$path = htmlspecialchars($_GET['p'], ENT_QUOTES,'SJIS');
-$base = '/est/';
-$url = $base . $path;
+$path = rawurldecode($_GET['p']);
+$path = mb_convert_encoding($path,'UTF-8','SJIS');
+$url = '/est/' . $path;
+//echo $url;
 ?>
 <title>Redirect ...</title>
 <?php echo "<meta http-equiv=\"Refresh\" content=\"0; URL=".$url."\">"; ?>
