@@ -32,7 +32,6 @@ est: estcmd wrapper
     reject    [prefix]       prefixに合致する文書の強制削除
     optimize                 casketの最適化
     build     [genre]        Webメニュー構築
-    restore   [num]          num世代前からのcasket復旧
     test      [path]         指定パスの登録が可能かテスト
     unlock                   lock解除
 
@@ -299,9 +298,28 @@ function finalize(){
     var out = cmd.exec(c); // コマンド発行
     (out[1])? println(out[1]) : println("ok");
 }
+// --- list ---
+function list(){
+    print_mini_header("list");
+    est.each_sheet(function(s){
+        println(s.name);
+    });
+}
+// --- test ---
+function test(path){
+    if(WScript.Arguments.length != 2){
+       println("Argument ERROR");
+       return;
+    }
+    print_mini_header("test");
+    var g = object(Gatherer).init(config,logger);
+    var cmd = object(Cmd).init(config,logger);
+    g.test(WScript.Arguments(1).replace(/(.+)[\\\/]$/,'$1'));
+    var out = cmd.exec("cmd /c rd /S /Q "+config["BASEDIR"]+"\\"+config["TMP_FOLDER"]+"\\"+"casket_test");
+}
 // --- backup ---
 // 世代バックアップ
-function backup(){
+//function backup(){
     //print_mini_header("backup");
     //var fsys = WScript.CreateObject("Scripting.FileSystemObject");
     //var dateFormat = new DateFormat("yyyyMMdd_HHmmss");
@@ -324,10 +342,10 @@ function backup(){
     //             "/S /E /H /C /Y /R";
     //var out = cmd.exec(c); // コマンド発行
     //(out[1])? println(out[1]) : println("-> ok");
-}
+//}
 // --- restore ---
 // 世代リストア
-function restore(){
+//function restore(){
     //print_mini_header("restore");
     //if(WScript.Arguments.length != 2){
     //   println("Argument ERROR");
@@ -355,26 +373,7 @@ function restore(){
     //             config["BASEDIR"]+"\\"+config['CASKET']+"\\ "+"/S /E /H /C /Y /R";
     //var out = cmd.exec(c); 
     //(out[1])? println(out[1]) : println(" ok");
-}
-// --- list ---
-function list(){
-    print_mini_header("list");
-    est.each_sheet(function(s){
-        println(s.name);
-    });
-}
-// --- test ---
-function test(path){
-    if(WScript.Arguments.length != 2){
-       println("Argument ERROR");
-       return;
-    }
-    print_mini_header("test");
-    var g = object(Gatherer).init(config,logger);
-    var cmd = object(Cmd).init(config,logger);
-    g.test(WScript.Arguments(1).replace(/(.+)[\\\/]$/,'$1'));
-    var out = cmd.exec("cmd /c rd /S /Q "+config["BASEDIR"]+"\\"+config["TMP_FOLDER"]+"\\"+"casket_test");
-}
+//}
 
 })();
 
