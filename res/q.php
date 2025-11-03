@@ -2,9 +2,8 @@
 <head>
 <?php
 $path = rawurldecode($_GET['p']);
-$path = mb_convert_encoding($path,'UTF-8','SJIS');
+//$path = mb_convert_encoding($path,'UTF-8','SJIS'); // old windows
 $url = '/est/' . $path;
-//echo $url;
 ?>
 <title>Redirect ...</title>
 <?php echo "<meta http-equiv=\"Refresh\" content=\"0; URL=".$url."\">"; ?>
@@ -16,6 +15,6 @@ window.setTimeout("selfclose();",10000);
 </script>
 </head>
 <body>
-
+Redirect ... <?php echo $url ?>
 </body>
 </html>
