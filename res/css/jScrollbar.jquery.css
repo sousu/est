@@ -11,7 +11,7 @@
 	background-color:#fff;
 }
 .jScrollbar .jScrollbar_mask {
-    width:427px; /* bar幅分減 */
+    width:424px; /* bar幅分減 */
     position:relative;
     top:0;
     float:left
@@ -25,7 +25,7 @@
     margin:0;
     padding:0;
     float:left;
-    width:3px;
+    width:6px;
     height:310px; /*need setting*/
     overflow:hidden;
     background:none;
@@ -37,7 +37,7 @@
     background-color:#bbb;
     display:block;
     height:60px;
-    width:3px;
+    width:6px;
     margin-left:0;
     /*cursor:s-resize*/
 }
