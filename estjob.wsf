@@ -290,7 +290,7 @@ function merge(){
 // --- finalize ---
 function finalize(){
     print_header("finalize");
-    println("publishing .. ");
+    println("finalize publishing .. ");
     var cmd = object(Cmd).init(config,logger);
     var c = "xcopy "+config["BASEDIR"]+"\\"+config['WORK']+" "+
                  config["BASEDIR"]+"\\"+config['PUBLISH']+" "+
