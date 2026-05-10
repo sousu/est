@@ -9,7 +9,7 @@
 body {
     color:#111;
     font-family:verdana,arial,helvetica,Sans-Serif;
-    font-size:12px;
+    font-size:12.5px;
     line-height:175%; 
     text-align:left;
 }
@@ -31,8 +31,8 @@ a{
 /* --- normal ---*/
 #estinfo{
     text-align:center;
-    font-size:11px;
-    padding:10px;
+    font-size:11.5px;
+    padding:11px;
     color:#eee;
     background: #777;
 }
@@ -162,7 +162,7 @@ div.form_advanced{
 /* --- logo --- */
 div.logo{
     text-align:center;
-    line-height: 200%;
+    line-height: 190%;
     margin-top:33%;
     width:700px;
 }

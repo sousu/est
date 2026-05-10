@@ -96,7 +96,7 @@ function showPane(paneId) {
 
 function unshowPane(paneId, unshowpaneId) {
     // Fly old menu out to right
-    $(unshowpaneId).fadeOut(200);
-    $(paneId).fadeIn(200);        
+    $(unshowpaneId).fadeOut(50);
+    $(paneId).fadeIn(50);        
 }
 
