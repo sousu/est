@@ -1,0 +1,12 @@
+services:
+  est:
+    container_name: est
+    build: ./container
+    ports:
+      - "0.0.0.0:5005:80"
+    volumes:
+      - ./container/lighttpd.conf:/etc/lighttpd/lighttpd.conf
+      - ./htdocs:/htdocs
+      - ./casket:/casket
+      - ./casket_merged:/casket_merged
+      - ./target:/target

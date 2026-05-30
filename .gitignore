@@ -1,0 +1,68 @@
+# === バックアップ ===
+/_backup/
+
+# === 移植元プロジェクト（参照のみ・追跡しない） ===
+/_org/
+/_mcp/
+
+# === 作業・生成データ（estcmdインデクス類） ===
+/casket/
+/casket_merged/
+/htdocs/casket_publish/
+
+# === 登録対象ファイル ===
+/target/
+
+# === 実運用設定（公開しない。雛形は est.yaml.example） ===
+/est.yaml
+
+# === 旧ファイル（どの階層でも無視） ===
+_old/
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# === Claude Code 設定（追跡しない） ===
+.claude/
+.mcp.json
+
+# === 秘密情報の混入を先回りで防止（公開リポジトリ向け防御策） ===
+.env
+.env.*
+*.key
+*.pem
+*.p12
+*.pfx
+*.crt
+.htpasswd
+secrets.*
+*credentials*
+
+# === ログ・一時・アーカイブ（誤コミット防止） ===
+*.log
+*.tmp
+*.bak
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+tmp/
+
+# === IDE / エディタ ===
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# === OS ===
+.DS_Store
+Thumbs.db

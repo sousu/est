@@ -1,0 +1,5 @@
+#!/bin/sh
+cp /usr/local/libexec/estseek.cgi /htdocs/estseek.cgi && \
+chmod +x /htdocs/estseek.cgi
+exec lighttpd -D -f /etc/lighttpd/lighttpd.conf
+
