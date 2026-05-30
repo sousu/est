@@ -1,11 +1,11 @@
 # === バックアップ ===
 /_backup/
 
-# === 移植元プロジェクト（参照のみ・追跡しない） ===
+# === 移植元プロジェクト ===
 /_org/
 /_mcp/
 
-# === 作業・生成データ（estcmdインデクス類） ===
+# === 作業データ ===
 /casket/
 /casket_merged/
 /htdocs/casket_publish/
@@ -13,10 +13,10 @@
 # === 登録対象ファイル ===
 /target/
 
-# === 実運用設定（公開しない。雛形は est.yaml.example） ===
+# === 運用設定 ===
 /est.yaml
 
-# === 旧ファイル（どの階層でも無視） ===
+# === 旧ファイル ===
 _old/
 
 # === Python ===
@@ -30,11 +30,11 @@ venv/
 .mypy_cache/
 .ruff_cache/
 
-# === Claude Code 設定（追跡しない） ===
+# === Claude Code ===
 .claude/
 .mcp.json
 
-# === 秘密情報の混入を先回りで防止（公開リポジトリ向け防御策） ===
+# === 情報混入 ===
 .env
 .env.*
 *.key
@@ -46,7 +46,7 @@ venv/
 secrets.*
 *credentials*
 
-# === ログ・一時・アーカイブ（誤コミット防止） ===
+# === ログ ===
 *.log
 *.tmp
 *.bak
@@ -56,7 +56,7 @@ secrets.*
 *.tgz
 tmp/
 
-# === IDE / エディタ ===
+# === IDE ===
 .idea/
 .vscode/
 *.swp
