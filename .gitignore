@@ -11,10 +11,12 @@
 /htdocs/casket_publish/
 
 # === 登録対象ファイル ===
-/target/
+/target/*
+!/target/.gitkeep
 
 # === 運用設定 ===
 /est.yaml
+/docker-compose.yml
 
 # === 旧ファイル ===
 _old/
