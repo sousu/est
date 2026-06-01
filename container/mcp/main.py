@@ -56,7 +56,7 @@ def _snippet(el) -> str:
         parts.append(c.tail or "")
     return " ".join("".join(parts).split())
 
-def _est_search(phrase: str | None, attrs: list[str], max_n: int = MAX_HITS) -> tuple[int, list[dict]]:
+def _est_search(phrase: str, attrs: list[str], max_n: int = MAX_HITS) -> tuple[int, list[dict]]:
     cmd = ["search", "-vx", "-sn", "900", "200", "200", "-max", str(max_n)]
     if phrase: cmd += ["-sf"]
     for a in attrs: cmd += ["-attr", a]
@@ -103,7 +103,7 @@ def _query_attrs(phrase, genre, roots) -> list[str]:
 
 
 @mcp.tool()
-def search(phrase: str | None = None, genre: str | None = None, roots: list[str] | None = None) -> dict:
+def search(phrase: str = "", genre: str = "", roots: list[str] = []) -> dict:
     """Hyper Estraierでキーワード検索。{"hits": 総ヒット数, "results": 最大100件} を返す。
     並び順: phrase指定時はスコア(関連度)降順、phrase未指定時は登録順。
     hits が results の件数より大きい場合は絞り込み(genre/roots/phrase の追加)を検討。
