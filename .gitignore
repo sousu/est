@@ -8,7 +8,10 @@
 # === 作業データ ===
 /casket/
 /casket_merged/
-/htdocs/casket_publish/
+/htdocs/casket_publish/*
+!/htdocs/casket_publish/parts/
+/htdocs/casket_publish/parts/*
+!/htdocs/casket_publish/parts/.gitkeep
 
 # === 登録対象ファイル ===
 /target/*
