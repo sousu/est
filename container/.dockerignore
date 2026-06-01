@@ -1,0 +1,4 @@
+# mcp配下の不要・秘密ファイルは除外
+mcp/.venv
+mcp/.env
+mcp/__pycache__

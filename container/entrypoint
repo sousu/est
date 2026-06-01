@@ -1,5 +1,6 @@
 #!/bin/sh
 cp /usr/local/libexec/estseek.cgi /htdocs/estseek.cgi && \
 chmod +x /htdocs/estseek.cgi
+cd /mcp && uv run --no-sync python main.py &
 exec lighttpd -D -f /etc/lighttpd/lighttpd.conf
 

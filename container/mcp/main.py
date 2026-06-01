@@ -9,7 +9,6 @@ from fastmcp.server.auth.providers.jwt import StaticTokenVerifier
 
 load_dotenv(Path(__file__).resolve().parent / ".env")  # mcp/.env を読み込む
 
-CONTAINER = "est"
 CASKET = "/htdocs/casket_publish"  # コンテナ内パス
 PARTS = Path(__file__).resolve().parent.parent / "htdocs" / "casket_publish" / "parts"
 MAX_HITS = 100
@@ -22,7 +21,7 @@ if not TOKEN:
 mcp = FastMCP("est", auth=StaticTokenVerifier({TOKEN: {"client_id": "est"}}))
 
 def _estcmd(*args: str) -> str:
-    cmd = ["docker", "exec", "-i", CONTAINER, "estcmd", *args]
+    cmd = ["estcmd", *args]  # 同一コンテナ内でestcmdを直接実行
     p = subprocess.run(cmd, capture_output=True, encoding="utf-8", errors="replace")
     return p.stdout
 

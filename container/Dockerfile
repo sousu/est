@@ -19,6 +19,12 @@ RUN apk update && \
     apk del curl gcc make libc-dev zlib-dev && \
     mkdir -p /htdocs /casket /target
 
+# uvを導入しmcpの依存を事前同期
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+COPY mcp/pyproject.toml mcp/uv.lock mcp/.python-version /mcp/
+COPY mcp/main.py /mcp/main.py
+RUN cd /mcp && uv sync --frozen --no-dev
+
 COPY entrypoint /entrypoint
 COPY estfx /usr/local/bin/estfx
 RUN chmod +x /entrypoint /usr/local/bin/estfx
