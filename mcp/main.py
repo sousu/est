@@ -1,9 +1,13 @@
 from __future__ import annotations
-import json, subprocess
+import json, os, subprocess
 from pathlib import Path
 from xml.etree import ElementTree as ET
 from bs4 import BeautifulSoup
+from dotenv import load_dotenv
 from fastmcp import FastMCP
+from fastmcp.server.auth.providers.jwt import StaticTokenVerifier
+
+load_dotenv(Path(__file__).resolve().parent / ".env")  # mcp/.env を読み込む
 
 CONTAINER = "est"
 CASKET = "/htdocs/casket_publish"  # コンテナ内パス
@@ -11,7 +15,11 @@ PARTS = Path(__file__).resolve().parent.parent / "htdocs" / "casket_publish" / "
 MAX_HITS = 100
 NS = {"e": "http://fallabs.com/hyperestraier/xmlns/search"}
 
-mcp = FastMCP("est")
+# Bearerトークン認証
+TOKEN = os.environ.get("EST_MCP_TOKEN")
+if not TOKEN:
+    raise SystemExit("EST_MCP_TOKEN 未設定: 認証トークンを指定してください")
+mcp = FastMCP("est", auth=StaticTokenVerifier({TOKEN: {"client_id": "est"}}))
 
 def _estcmd(*args: str) -> str:
     cmd = ["docker", "exec", "-i", CONTAINER, "estcmd", *args]
@@ -131,4 +139,5 @@ def detail(id: int) -> str:
     return (parts[1] if len(parts) == 2 else out).strip()
 
 if __name__ == "__main__":
-    mcp.run(transport="http",host="0.0.0.0",port=5006)
+    mcp.run(transport="http",host=os.environ.get("EST_MCP_HOST"),port=int(os.environ.get("EST_MCP_PORT")))
+
