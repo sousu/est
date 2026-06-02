@@ -103,6 +103,8 @@ def _write(name, content):
 
 def _clear_parts():
     for fn in os.listdir(PARTS):
+        if fn.startswith(".git"):  # .gitkeep/.gitignore 等は温存
+            continue
         fp = os.path.join(PARTS, fn)
         if os.path.isfile(fp):
             os.remove(fp)
