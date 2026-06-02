@@ -4,13 +4,13 @@ config:
 genres:
   sample_a:
     - dirPath: /target/sample
-      indexName: サンプルインデックスA
+      rootName: サンプルルートA
       depth: 2
       regex: ""
       exregex: ""
   sample_b:
     - dirPath: /target/docs
-      indexName: サンプルインデックスB
+      rootName: サンプルルートB
       depth: 2
       regex: ""
       exregex: ""

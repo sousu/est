@@ -43,7 +43,7 @@ def _chain(dir_path, fpath, depth):
 def _gather_entry(genre_name, entry):
     """1エントリのgather実行。ディレクトリchain毎に @root/@dep<n> を付与"""
     dir_path = entry["dirPath"]
-    idx_name = entry["indexName"]
+    root_name = entry["rootName"]
     depth    = int(entry.get("depth", 2))
     regex    = entry.get("regex") or ""
     exregex  = entry.get("exregex") or ""
@@ -66,10 +66,10 @@ def _gather_entry(genre_name, entry):
         total += 1
 
     if not total:
-        print(f"  <{idx_name}> no files matched")
+        print(f"  <{root_name}> no files matched")
         return
 
-    print(f"  <{idx_name}> {total} files ", end="", flush=True)
+    print(f"  <{root_name}> {total} files ", end="", flush=True)
 
     def dot(line):
         # 新規登録(registered)・既登録スキップ(passed)とも1ファイル1ドット
@@ -106,7 +106,7 @@ def cmd_check(conf, args):
     if genre_name not in genres:
         print(f"genre [{genre_name}] not found", file=sys.stderr); sys.exit(1)
     for entry in genres[genre_name]:
-        print(f"  [{entry['indexName']}]")
+        print(f"  [{entry['rootName']}]")
         result = docker.estcmd(
             "scandir", "-tf", "-pa", entry["dirPath"],
             check=False
@@ -129,7 +129,7 @@ def cmd_gather(conf, args):
     cmd_merge(conf, [genre_name])
     print(f"=== purge orphan [{genre_name}] ===")
     for entry in genres[genre_name]:
-        print(f"  {entry['indexName']} ...", end="", flush=True)
+        print(f"  {entry['rootName']} ...", end="", flush=True)
         docker.estcmd("purge", "-cl", MERGED, entry["dirPath"], check=False, quiet=True)
         print(" done")
     cmd_build(conf, [])
@@ -217,7 +217,7 @@ def cmd_regather(conf, args):
     if docker.sh("test", "-e", f"{MERGED}/_idx", check=False, quiet=True).returncode == 0:
         print(f"=== purge merged [{genre_name}] ===")
         for entry in genres[genre_name]:
-            print(f"  {entry['indexName']} ...", end="", flush=True)
+            print(f"  {entry['rootName']} ...", end="", flush=True)
             docker.estcmd("purge", "-cl", "-fc", MERGED, entry["dirPath"], check=False, quiet=True)
             print(" done")
     cmd_gather(conf, args)

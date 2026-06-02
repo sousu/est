@@ -3,11 +3,8 @@ import json, os, subprocess
 from pathlib import Path
 from xml.etree import ElementTree as ET
 from bs4 import BeautifulSoup
-from dotenv import load_dotenv
 from fastmcp import FastMCP
 from fastmcp.server.auth.providers.jwt import StaticTokenVerifier
-
-load_dotenv(Path(__file__).resolve().parent / ".env")  # mcp/.env を読み込む
 
 CASKET = "/htdocs/casket_publish"  # コンテナ内パス
 PARTS = Path(__file__).resolve().parent.parent / "htdocs" / "casket_publish" / "parts"

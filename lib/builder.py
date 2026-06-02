@@ -117,7 +117,7 @@ def build(conf):
         for e in entries:
             match = _matcher(e.get("regex"), e.get("exregex"))
             e_depth = int(e.get("depth", 2))
-            b.root_li(e["indexName"], e["dirPath"])
+            b.root_li(e["rootName"], e["dirPath"])
             root_cnt = b.root_cnt
             nodes = _walk(e["dirPath"], e_depth)
             _write("%s_root%d" % (gid, root_cnt), b.sub_menu(nodes, e_depth, match))
