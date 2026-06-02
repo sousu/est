@@ -463,9 +463,10 @@ div .paging a{
     .estresult dl.doc dd.doc_text{
         font-size:90%;
         line-height:144%;
+        overflow-wrap: anywhere;
     }
-    /* quickmenu(フォルダ絞り込み)をモバイルでは350px固定に。
-       left:-9999pxでの隠蔽はleft上書きで効かなくなるのでdisplayで隠す(JSのslideDown/hideと整合)。
+    /* quickmenu(フォルダ絞り込み)をモバイルでは350px固定に
+       left:-9999pxでの隠蔽はleft上書きで効かなくなるのでdisplayで隠す(JSのslideDown/hideと整合)
        内部は元の比率(menuholder padding10*2/ボタン30/バー6)に合わせて固定 */
     .quickmenu{display:none;width:350px!important;left:22px!important;margin-top:42px!important;}
     .quickmenu .quickmenupane li{width:330px;}
