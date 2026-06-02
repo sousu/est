@@ -222,8 +222,8 @@ jQuery(function($){
     });
 
     // --- order ---
-    var order = ($.cookie('est_order'))? 
-        $.cookie('est_order') : "score";
+    var order = ($.cookie('est_order'))?
+        $.cookie('est_order') : "date";
     $('#submittool a#'+order+' img').addClass('selected-order');
     $('#submittool a.order').click(function(){
         order = $(this).attr('id');
