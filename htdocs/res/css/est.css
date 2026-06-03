@@ -9,7 +9,7 @@
 body {
     color:#111;
     font-family:verdana,arial,helvetica,Sans-Serif;
-    font-size:12.5px;
+    font-size:13px;
     line-height:175%; 
     text-align:left;
 }
@@ -286,6 +286,7 @@ dd{
     padding:8px 0;
     /*background: url(/res/img/hukidasi.gif) no-repeat scroll left top;*/
     color:#6d6d6d;
+    overflow-wrap: anywhere;
 }
 .estresult dl.doc dd.doc_navi{
     /*background: url(/res/img/hukidasi2.gif) no-repeat scroll left bottom;*/
