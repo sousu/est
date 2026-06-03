@@ -35,7 +35,7 @@ a{
     font-size:11.5px;
     padding:11px;
     color:#eee;
-    background: #777;
+    background: var(--est-accent,#777);
 }
 #estinfo a{
     color:#eee;
@@ -83,7 +83,7 @@ div.form_basic input#phrase{
     -moz-border-left-colors: none;
     -moz-border-right-colors: none;
     -moz-border-top-colors: none;
-    border-color: -moz-use-text-color;
+    border-color: var(--est-accent,#777);
     border-image: none;
     border-style: none none dotted;
     border-width: medium medium 1px;
@@ -117,14 +117,15 @@ div.genres span{
     -webkit-border-radius: 4px;/*for Safari and chrome
     */
     background: #FFFFFF;
-    border: 1px solid #777777;
+    border: 1px solid var(--est-accent,#777777);
+    color: var(--est-accent,#777777);
     line-height: 28px;
     list-style: none outside none;
     padding: 5px 10px;
     text-decoration: none;
 }
 div.genres a.selected{
-    background: none repeat scroll 0 0 #777777;
+    background: none repeat scroll 0 0 var(--est-accent,#777777);
     color: #FFFFFF;
 }
 div.genres a.genre_ctrl{
@@ -234,7 +235,7 @@ div#menu{
     width:700px;
 }
 .estresult div.resinfo{
-    background: none repeat scroll 0 0 #777777;
+    background: none repeat scroll 0 0 var(--est-accent,#777777);
     color: #FFFFFF !important;
     padding: 10px 0;
     position: absolute;

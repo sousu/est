@@ -27,9 +27,21 @@
 }
 .quickmenu .quickmenupane{
     position: absolute;
-	overflow: auto;
+	overflow-y: auto;
+	overflow-x: hidden;
+	-webkit-overflow-scrolling: touch; /* iOS慣性スクロール */
+	overscroll-behavior: contain;
+	background-color:#fff;
 	z-index: 100!important;
 }
+/* モダンな細いスクロールバー(動かす時だけ表示のオートハイド) */
+.quickmenu .quickmenupane{ scrollbar-width: thin; scrollbar-color:transparent transparent; }
+.quickmenu .quickmenupane.scrolling,
+.quickmenu .quickmenupane:hover{ scrollbar-color:#bbb transparent; }
+.quickmenu .quickmenupane::-webkit-scrollbar{ width:6px; }
+.quickmenu .quickmenupane::-webkit-scrollbar-thumb{ background:transparent; border-radius:3px; transition:background .3s; }
+.quickmenu .quickmenupane.scrolling::-webkit-scrollbar-thumb,
+.quickmenu .quickmenupane:hover::-webkit-scrollbar-thumb{ background:#bbb; }
 .quickmenupane{
     height:314px;
 }

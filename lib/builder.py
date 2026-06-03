@@ -109,9 +109,16 @@ def _clear_parts():
         if os.path.isfile(fp):
             os.remove(fp)
 
+def theme(conf):
+    """サイト識別用テーマ色CSSを生成 (est.yaml config.color)。
+    未指定なら空ファイル=est.css側の var() フォールバック(#777)が効く"""
+    color = (cfg.get_config(conf).get("color") or "").strip()
+    _write("theme.css", ":root{--est-accent:%s}\n" % color if color else "")
+
 def build(conf):
     """全genreのメニュー parts を生成"""
     _clear_parts()
+    theme(conf)
     ts = time.strftime("%Y/%m/%d %H:%M")
     for gname, entries in cfg.get_genres(conf).items():
         gid = md5(gname)

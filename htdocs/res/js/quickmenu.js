@@ -5,7 +5,7 @@
 // obtained from Silver Pride Software before use.
 // <reference path="jquery.intellisense.js"/>
 //
-//  内部でjScrollbar利用するため独自実装やスタイル関係のリテラルを含む
+//  スクロールはネイティブ(.quickmenupane overflow:auto)に変更済
 
 jQuery.fn.QuickMenu = function() {
     //-- init for recycle
@@ -17,30 +17,15 @@ jQuery.fn.QuickMenu = function() {
     $('ul.quickmenupane').each(addNavigationLinks);
     $('.quickmenuitem a').wrapInner('<div class="item"></div>')
     $('.quickmenuitem label').wrapInner('<div class="item"></div>')
-    //--- Perfect-scroll ---
-    //$('.quickmenupane').wrapInner('<div class="pscroll"></div>');
-    //--- jScrollbar ---
-    $('.quickmenupane').wrapInner('<div class="jScrollbar"><div class="jScrollbar_mask"></div></div>');
-    $('.jScrollbar').append('<div class="jScrollbar_draggable"><a href="#" class="draggable"></a></div>');
-    $('.jScrollbar').append('<div class="clr"></div>');
-    // --- ---
+    //--- native scroll (.quickmenupane の overflow:auto を利用) ---
     $('.quickmenupane').appendTo('#menuholder');
-    $('#quickmenupane0').show();
-    //--- Perfect-scroll ---
-    //$('.pscroll').perfectScrollbar({
-    //    suppressScrollX: true
-    //});
-    //--- jScrollbar ---
-    h=$('.jScrollbar_mask').height();
-    console.log(h);
-    if(h<300){                  step = 28; }
-    else if(h>=300  && h<1000){ step = 23; }
-    else if(h>=1000 && h<3000){ step = 11; }
-    else if(h>=3000 && h<6000){ step = 5;  }
-    else {                      step = 3;  }
-    $('.jScrollbar').jScrollbar({
-        scrollStep : step
+    //--- スクロール中だけバー表示(オートハイド) ---
+    $('.quickmenupane').on('scroll', function(){
+        var p=$(this); p.addClass('scrolling');
+        clearTimeout(p.data('st'));
+        p.data('st', setTimeout(function(){ p.removeClass('scrolling'); }, 700));
     });
+    $('#quickmenupane0').show();
 }
 
 function initId(){
@@ -87,11 +72,6 @@ function debugeach() {
 
 function showPane(paneId) {
     $(paneId).fadeIn();
-    //--- jScrollbar ---
-    $('.jScrollbar').jScrollbar({
-        scrollStep : step
-    });
-
 }
 
 function unshowPane(paneId, unshowpaneId) {
