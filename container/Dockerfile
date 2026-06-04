@@ -6,7 +6,7 @@ ENV HE_VERSION=hyperestraier-1.4.13
 ENV HE_URL=https://dbmx.net/hyperestraier/hyperestraier-1.4.13.tar.gz
 
 RUN apk update && \
-    apk --no-cache add curl gcc make libc-dev zlib-dev lighttpd poppler-utils \
+    apk --no-cache add curl gcc make libc-dev zlib-dev lighttpd poppler-utils poppler-data \
         python3 py3-pip py3-lxml py3-pillow antiword && \
     pip install --break-system-packages --no-cache-dir python-docx openpyxl python-pptx striprtf && \
     curl -o /tmp/qdbm.tar.gz ${QDBM_URL} && \

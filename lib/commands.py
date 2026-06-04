@@ -10,6 +10,7 @@ from . import docker
 from . import builder
 
 # 全genreをmergeする作業db (org の casket_work 相当) と公開先
+CASKET  = "/casket"
 MERGED  = "/casket_merged"
 PUBLISH = "/htdocs/casket_publish"
 
@@ -211,6 +212,8 @@ def cmd_merge(conf, args):
         print(" done")
     print("  optimize ...", end="", flush=True)
     docker.estcmd("optimize", MERGED, check=False, quiet=True)
+    print(" done")
+    print("  extkeys ...", end="", flush=True)
     docker.estcmd("extkeys",  MERGED, check=False, quiet=True)
     print(" done")
 
@@ -230,11 +233,28 @@ def cmd_build(conf, args):
     builder.pack(conf)
     print("done")
 
+def _purge_unregistered_caskets(conf):
+    """est.yaml に登録の無い genre の casket を /casket から削除"""
+    genres = set(cfg.get_genres(conf))
+    r = docker.sh("find", CASKET, "-mindepth", "1", "-maxdepth", "1", "-type", "d",
+                  check=False, quiet=True)
+    dirs = [os.path.basename(l) for l in r.stdout.splitlines() if l.strip()]
+    extra = [d for d in dirs if d not in genres]
+    if not extra:
+        return
+    for d in extra:
+        print(f"  rm casket [{d}] ...", end="", flush=True)
+        docker.sh("rm", "-rf", f"{CASKET}/{d}", check=False, quiet=True)
+        print(" done")
+
 def cmd_optimize(conf, args):
     """casket_merged の最適化"""
     print("=== optimize ===")
-    print("  ...", end="", flush=True)
+    _purge_unregistered_caskets(conf)
+    print("  optimize ...", end="", flush=True)
     docker.estcmd("optimize", MERGED, check=False, quiet=True)
+    print(" done")
+    print("  extkeys ...", end="", flush=True)
     docker.estcmd("extkeys",  MERGED, check=False, quiet=True)
     print(" done")
 
@@ -248,7 +268,7 @@ def cmd_regather(conf, args):
         print(f"genre [{genre_name}] not found", file=sys.stderr); sys.exit(1)
     cmd_purge(conf, args)
     if docker.sh("test", "-e", f"{MERGED}/_idx", check=False, quiet=True).returncode == 0:
-        print(f"=== purge merged [{genre_name}] ===")
+        print(f"=== purge merged [{genre_name}] ===") # mergedからもgenreを強制削除
         for entry in genres[genre_name]:
             print(f"  {entry['rootName']} ...", end="", flush=True)
             docker.estcmd("purge", "-cl", "-fc", MERGED, entry["dirPath"], check=False, quiet=True)
