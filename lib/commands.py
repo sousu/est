@@ -9,12 +9,11 @@ from . import config as cfg
 from . import docker
 from . import builder
 
-# 全genreをmergeする作業db (org の casket_work 相当) と公開先
 CASKET  = "/casket"
 MERGED  = "/casket_merged"
 PUBLISH = "/htdocs/casket_publish"
 
-# 登録対象拡張子 全ファイルを外部フィルター(estfx)でテキスト化する。
+# 登録対象拡張子 
 _INDEX_EXTS  = {".txt", ".html", ".htm", ".md", ".csv", ".py", ".js", ".ts", ".tsx", ".jsx", ".bat", ".wsf",
                 ".c", ".cpp", ".h", ".cs", ".java", ".go", ".rs", ".rb", ".php",
                 ".swift", ".kt", ".scala", ".sh", ".ps1", ".pl", ".lua", ".dart",
@@ -22,7 +21,7 @@ _INDEX_EXTS  = {".txt", ".html", ".htm", ".md", ".csv", ".py", ".js", ".ts", ".t
                 ".sql", ".json", ".yaml", ".yml", ".toml", ".xml",
                 ".vb", ".resx", ".rtf",
                 ".pdf", ".docx", ".doc", ".xlsx", ".pptx"}
-# -fx 外部フィルター。出力はテキストなので T@ 指定
+# -fx外部フィルター
 _FILTER_SUFS = ",".join(sorted(_INDEX_EXTS))
 _FILTER_CMD  = "T@/usr/local/bin/estfx"
 
@@ -71,7 +70,6 @@ def _gather_entry(genre_name, entry):
     print(f"  <{root_name}> {total} files ", end="", flush=True)
 
     def dot(line):
-        # 新規登録(registered)は + 、既登録スキップ(passed)は .
         if ": registered" in line:
             print("+", end="", flush=True)
         elif ": passed" in line:
@@ -84,13 +82,12 @@ def _gather_entry(genre_name, entry):
                 "-aa", "@genre", gid, "-aa", "@root", builder.md5(chain[0])]
         for i in range(1, len(chain)):
             opts += ["-aa", f"@dep{i}", builder.md5(chain[i])]
-        # 全ファイルを estfx でテキスト化 (本文先頭にパス付与、-fx の出力はテキスト=T@)
         docker.estcmd("gather", *opts, "-fx", _FILTER_SUFS, _FILTER_CMD, casket, "-",
                       stdin="\n".join(files) + "\n", check=False, on_line=dot)
     print(" done")
 
 def _doc_paths(casket):
-    """casket内の (id, uri, path) 一覧。path は file:// と percent を除去"""
+    """casket内の (id,uri,path) 一覧"""
     r = docker.estcmd("list", casket, quiet=True, check=False)
     out = []
     for line in r.stdout.splitlines():
@@ -105,9 +102,12 @@ def _under(path, dirs):
     return any(path == d or path.startswith(d + "/") for d in dirs)
 
 def _purge_ghosts(conf, genre_name):
-    """現dirPath配下に属さない旧root由来のdocを除去。rootName変更等でdirPathが
-    変わると旧パスのdocが残り続けるのを防ぐ。casketは当該genre基準、MERGEDは
-    全genreのdirPath union基準で掃除する(他genreの正規docを保護)"""
+    """
+    rootName等の変更でdirPathが変わると、旧パスのdocがcasket内に残り続ける。
+    これを「現在のdirPath配下に属さないdoc」として検出し削除する。
+    - casket: 当該genreのdirPathを基準に判定
+    - MERGED: 全genreのdirPathの和集合を基準に判定(他genreの正規docを保護)
+    """
     genres = cfg.get_genres(conf)
     casket = f"/casket/{genre_name}"
     g_dirs = [e["dirPath"].rstrip("/") for e in genres[genre_name]]
