@@ -19,11 +19,11 @@ for kv in q.split("&"):
 if not f:err("400 Bad Request","missing f")
 path=os.path.realpath(os.path.join(BASE,f.lstrip("/")))
 if not(path==BASE or path.startswith(BASE+os.sep)):err("403 Forbidden","out of range")
-if not path.lower().endswith(".md") or not os.path.isfile(path):err("404 Not Found","not a markdown file")
+#if not path.lower().endswith(".md") or not os.path.isfile(path):err("404 Not Found","not a markdown file")
 
 def decode(b):
- # ISO-2022-JPは全バイトが7bitでutf-8等もstrict成功し化けるため、ESC(0x1B)有無で先に判定。
- # 残りはutf-8→euc-jp→cp932をstrict試行(euc優先でcp932誤判定を抑制)。全滅ならUTF-8で置換。
+ # ISO-2022-JPは全バイトが7bitでutf-8等もstrict成功し化けるため、ESC(0x1B)有無で先に判定
+ # 残りはutf-8→euc-jp→cp932をstrict試行(euc優先でcp932誤判定を抑制) 全滅ならUTF-8で置換
  cands=(["iso-2022-jp"] if b"\x1b" in b else [])+["utf-8-sig","utf-8","euc-jp","cp932"]
  for enc in cands:
   try:return b.decode(enc)
