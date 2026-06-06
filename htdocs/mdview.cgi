@@ -38,7 +38,7 @@ css=HtmlFormatter().get_style_defs(".codehilite")
 out=f"""<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title><style>
-body{{font-family:-apple-system,"Segoe UI","Helvetica Neue","Hiragino Sans","Noto Sans JP",sans-serif;
+body{{font-size:14px;font-family:-apple-system,"Segoe UI","Helvetica Neue","Hiragino Sans","Noto Sans JP",sans-serif;
 line-height:1.7;color:#1f2328;max-width:900px;margin:0 auto;padding:24px 32px;word-wrap:break-word}}
 h1,h2{{border-bottom:1px solid #d8dee4;padding-bottom:.3em}}
 h1,h2,h3,h4{{margin-top:1.5em;margin-bottom:.6em;font-weight:600;line-height:1.25}}
