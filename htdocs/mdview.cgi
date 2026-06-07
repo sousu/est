@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Markdownビューア: /files/*.md へのアクセスをlighttpdのrewriteで受け、HTML描画して返す
 QUERY_STRINGの f=<target相対パス> を /target 基準で安全解決し、markdownをHTML化する"""
-import html,os,sys
+import html,os,re,sys
 import xml.etree.ElementTree as etree
 from urllib.parse import unquote_plus
 import markdown
@@ -42,9 +42,26 @@ def decode(b):
   except UnicodeDecodeError:pass
  return b.decode("utf-8",errors="replace")
 
+_URL=re.compile(r'https?://[^\s<>"]+')
+def txt2html(s):
+ # txtはmarkdown解釈せず、エスケープしたうえで裸URLのみ<a>化(改行・空白は<pre>で保持)
+ out=[];pos=0
+ for m in _URL.finditer(s):
+  out.append(html.escape(s[pos:m.start()]))
+  url=m.group(0).rstrip(".,;:!?)]}>\"'");tail=m.group(0)[len(url):]
+  out.append(f'<a target="_blank" rel="noopener" href="{html.escape(url,True)}">{html.escape(url)}</a>{html.escape(tail)}')
+  pos=m.end()
+ out.append(html.escape(s[pos:]))
+ return "".join(out)
+
 with open(path,"rb") as fp:text=decode(fp.read())
-body=markdown.markdown(text,extensions=["fenced_code","tables","codehilite","toc","sane_lists",AutolinkExt()],
- extension_configs={"codehilite":{"guess_lang":False}})
+if path.lower().endswith(".txt"):
+ body=f'<pre class="txt">{txt2html(text)}</pre>'
+else:
+ body=markdown.markdown(text,extensions=["fenced_code","tables","codehilite","toc","sane_lists",AutolinkExt()],
+  extension_configs={"codehilite":{"guess_lang":False}})
+ # 外部URLリンク(http/https)のみ別タブで開く(TOC等の#アンカーは対象外)
+ body=re.sub(r'<a href="(https?://)',r'<a target="_blank" rel="noopener" href="\1',body)
 title=html.escape(os.path.basename(path))
 css=HtmlFormatter().get_style_defs(".codehilite")
 
@@ -95,6 +112,15 @@ pre code{
  background:none;
  padding:0;
  font-size:100%;
+}
+pre.txt{
+ background:none;
+ padding:0;
+ font-family:inherit;
+ font-size:inherit;
+ line-height:inherit;
+ white-space:pre-wrap;
+ word-wrap:break-word;
 }
 blockquote{
  margin:0;
