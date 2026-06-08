@@ -33,6 +33,8 @@ def _list_dirs(dirpath, depth):
 
 def _walk(dirpath, e_depth):
     """FileDiver相当の先行順(pre-order)で (name,path,depth,has_child) を返す"""
+    if e_depth < 1:  # depth=0 はルート(@root)絞り込みのみ。サブチェックボックスは出さない
+        return []
     dirs = _list_dirs(dirpath, e_depth)
     children = {}
     for p in dirs:
@@ -44,7 +46,7 @@ def _walk(dirpath, e_depth):
         for p in children.get(parent, []):
             name = p.rsplit("/", 1)[1]
             out.append((name, p, depth, bool(children.get(p))))
-            if e_depth >= depth + 1:
+            if e_depth >= depth + 2:  # 表示はノード深さ0..e_depth-1 (=dep1..dep(e_depth))に揃える
                 rec(p, depth + 1)
     rec(dirpath, 0)
     return out
@@ -90,7 +92,7 @@ class _Build:
             elif diff != 0:
                 html += self._close(pre - depth, pre)
             html += " " * (depth + 1) + "<li>" + self._li_inner(name, md5(path))
-            if (not has_child) or (depth == e_depth):
+            if (not has_child) or (depth == e_depth - 1):
                 html += "</li>\n"
             pre = depth
         html += self._close(pre, pre)

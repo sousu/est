@@ -10,7 +10,15 @@ def load(path=None):
         return yaml.safe_load(f)
 
 def get_genres(conf):
-    return conf.get("genres", {})
+    # dirPath は絶対パスに正規化(相対指定でもURI由来パスとghost/orphan purgeの判定を一致させる)
+    genres = conf.get("genres", {})
+    for entries in genres.values():
+        for e in entries:
+            d = (e.get("dirPath") or "").rstrip("/")
+            if d and not d.startswith("/"):
+                d = "/" + d
+            e["dirPath"] = d
+    return genres
 
 def get_config(conf):
     return conf.get("config", {})
