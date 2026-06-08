@@ -14,6 +14,7 @@ est: estcmd wrapper
   gather   <genre>      インデックス登録
   purge    <genre>      インデックス削除
   regather <genre>      purgeからgather
+  reject   <path>       指定パスのみ削除し再gather
   merge                 全genreを casket_merged に統合
   publish               casket_merged を公開フォルダへ反映
   build                 Webメニューを生成
@@ -26,6 +27,7 @@ CMDS = {
     "gather":   cmds.cmd_gather,
     "purge":    cmds.cmd_purge,
     "regather": cmds.cmd_regather,
+    "reject":   cmds.cmd_reject,
     "merge":    cmds.cmd_merge,
     "publish":  cmds.cmd_publish,
     "build":    cmds.cmd_build,

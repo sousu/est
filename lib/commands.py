@@ -41,8 +41,9 @@ def _chain(dir_path, fpath, depth):
         chain.append(cur)
     return tuple(chain[:depth + 1])
 
-def _gather_entry(genre_name, entry):
-    """1エントリのgather実行。ディレクトリchain毎に @root/@dep<n> を付与"""
+def _gather_entry(genre_name, entry, find_root=None):
+    """1エントリのgather実行。ディレクトリchain毎に @root/@dep<n> を付与。
+    find_root 指定時はその配下のファイルのみ対象(reject用)。chain/属性は dir_path 基準。"""
     dir_path = entry["dirPath"]
     root_name = entry["rootName"]
     depth    = int(entry.get("depth", 2))
@@ -53,7 +54,7 @@ def _gather_entry(genre_name, entry):
     # 全ファイルを再帰収集し chain(深さcap) 毎にグループ化
     groups = {}  # chain(tuple) -> [fpath...]
     total = 0
-    for fpath in _find_files(dir_path):
+    for fpath in _find_files(find_root or dir_path):
         if regex and not re.search(regex, fpath):
             continue
         if exregex and re.search(exregex, fpath):
@@ -100,6 +101,17 @@ def _doc_paths(casket):
 
 def _under(path, dirs):
     return any(path == d or path.startswith(d + "/") for d in dirs)
+
+def _find_entry(genres, path):
+    """path を含む (genre_name, entry) を返す。複数該当時は dirPath が最長のもの"""
+    best = None
+    for gname, entries in genres.items():
+        for e in entries:
+            d = e["dirPath"]
+            if path == d or path.startswith(d + "/"):
+                if best is None or len(d) > len(best[1]["dirPath"]):
+                    best = (gname, e)
+    return best
 
 def _purge_ghosts(conf, genre_name):
     """
@@ -275,4 +287,31 @@ def cmd_regather(conf, args):
             print(" done")
     cmd_gather(conf, args)
 
+def cmd_reject(conf, args):
+    """指定パス(ファイル/ディレクトリ)配下のdocのみを削除。
+    """
+    if not args:
+        print("usage: est reject <path>", file=sys.stderr); sys.exit(1)
+    path = args[0].rstrip("/")
+    if not path.startswith("/"):
+        path = "/" + path
+    genres = cfg.get_genres(conf)
+    found = _find_entry(genres, path)
+    if not found:
+        print(f"path [{path}] not under any genre dirPath", file=sys.stderr); sys.exit(1)
+    genre_name, entry = found
+    casket = f"/casket/{genre_name}"
+    print(f"=== reject [{genre_name}] {path} ===")
+    # casket_merged から対象URI(path自身と配下)を out
+    targets = [u for d, u, p in _doc_paths(casket)
+               if p == path or p.startswith(path + "/")]
+    if targets:
+        print(f"  out {len(targets)} docs ", end="", flush=True)
+        for uri in targets:
+            docker.estcmd("out", "-cl", casket, uri, check=False, quiet=True)
+            docker.estcmd("out", "-cl", MERGED, uri, check=False, quiet=True)
+            print(".", end="", flush=True)
+        print(" done")
+    else:
+        print("  no existing docs")
 
