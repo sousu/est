@@ -8,6 +8,9 @@ update
 /_org/
 /_mcp/
 
+# === バイナリ ===
+/htdocs/estseek.cgi
+
 # === 作業データ ===
 /casket/
 /casket_merged/

@@ -4,19 +4,42 @@ from pathlib import Path
 from xml.etree import ElementTree as ET
 from bs4 import BeautifulSoup
 from fastmcp import FastMCP
-from fastmcp.server.auth.providers.jwt import StaticTokenVerifier
+#from fastmcp.server.auth.providers.jwt import StaticTokenVerifier
+from fastmcp.server.auth.providers.github import GitHubProvider
+from fastmcp.server.middleware import Middleware, MiddlewareContext
+from fastmcp.server.dependencies import get_access_token
+
 
 CASKET = "/htdocs/casket_publish"  # コンテナ内パス
 PARTS = Path(__file__).resolve().parent.parent / "htdocs" / "casket_publish" / "parts"
 MAX_HITS = 100
 NS = {"e": "http://fallabs.com/hyperestraier/xmlns/search"}
 
-# Bearerトークン認証
-TOKEN = os.environ.get("EST_MCP_TOKEN")
-if not TOKEN:
-    raise SystemExit("EST_MCP_TOKEN 未設定: 認証トークンを指定してください")
-mcp = FastMCP("est", auth=StaticTokenVerifier({TOKEN: {"client_id": "est"}}))
+# ---認証---
+## Bearerトークン認証
+#TOKEN = os.environ.get("EST_MCP_TOKEN")
+#if not TOKEN:
+#    raise SystemExit("EST_MCP_TOKEN 未設定: 認証トークンを指定してください")
+#mcp = FastMCP("est", auth=StaticTokenVerifier({TOKEN: {"client_id": "est"}}))
 
+auth = GitHubProvider(
+    client_id=os.environ["GITHUB_CLIENT_ID"],
+    client_secret=os.environ["GITHUB_CLIENT_SECRET"],
+    base_url=os.environ["EST_MCP_BASE_URL"],
+    allowed_client_redirect_uris=os.environ["EST_MCP_REDIRECT_URIS"].split(","),
+)
+
+ALLOWED_IDS = set(os.environ["ALLOWED_GITHUB_IDS"].split(","))
+class OnlyMe(Middleware):
+    async def on_request(self, ctx: MiddlewareContext, call_next):
+        claims = get_access_token().claims
+        if claims.get("sub") not in ALLOWED_IDS:
+            raise PermissionError("unauthorized")
+        return await call_next(ctx)
+
+mcp = FastMCP(name="est",auth=auth,middleware=[OnlyMe()])
+
+# ---実装---
 def _estcmd(*args: str) -> str:
     cmd = ["estcmd", *args]  # 同一コンテナ内でestcmdを直接実行
     p = subprocess.run(cmd, capture_output=True, encoding="utf-8", errors="replace")
@@ -97,7 +120,6 @@ def _query_attrs(phrase, genre, roots) -> list[str]:
         if missing: raise ValueError(f"roots not found: {sorted(missing)}")
     if hashes: attrs.append("@root STROREQ " + " ".join(sorted(hashes)))
     return attrs
-
 
 @mcp.tool()
 def search(phrase: str = "", genre: str = "", roots: list[str] = []) -> dict:
