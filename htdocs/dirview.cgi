@@ -98,5 +98,6 @@ out=f"""<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
 <div class="crumb">{nav}</div>
 <table>{''.join(rows)}</table>
 </body></html>"""
-sys.stdout.write("Content-Type: text/html;charset=UTF-8\r\n\r\n")
+sys.stdout.write("Content-Type: text/html;charset=UTF-8\r\nX-Content-Type-Options: nosniff\r\n"
+ "Content-Security-Policy: default-src 'none';style-src 'unsafe-inline'\r\n\r\n")
 sys.stdout.write(out)

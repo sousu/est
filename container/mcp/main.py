@@ -4,7 +4,7 @@ from pathlib import Path
 from xml.etree import ElementTree as ET
 from bs4 import BeautifulSoup
 from fastmcp import FastMCP
-#from fastmcp.server.auth.providers.jwt import StaticTokenVerifier
+from fastmcp.server.auth.providers.jwt import StaticTokenVerifier
 from fastmcp.server.auth.providers.github import GitHubProvider
 from fastmcp.server.middleware import Middleware, MiddlewareContext
 from fastmcp.server.dependencies import get_access_token
@@ -16,28 +16,31 @@ MAX_HITS = 100
 NS = {"e": "http://fallabs.com/hyperestraier/xmlns/search"}
 
 # ---認証---
-## Bearerトークン認証
-#TOKEN = os.environ.get("EST_MCP_TOKEN")
-#if not TOKEN:
-#    raise SystemExit("EST_MCP_TOKEN 未設定: 認証トークンを指定してください")
-#mcp = FastMCP("est", auth=StaticTokenVerifier({TOKEN: {"client_id": "est"}}))
-
-auth = GitHubProvider(
-    client_id=os.environ["GITHUB_CLIENT_ID"],
-    client_secret=os.environ["GITHUB_CLIENT_SECRET"],
-    base_url=os.environ["EST_MCP_BASE_URL"],
-    allowed_client_redirect_uris=os.environ["EST_MCP_REDIRECT_URIS"].split(","),
-)
-
-ALLOWED_IDS = set(os.environ["ALLOWED_GITHUB_IDS"].split(","))
-class OnlyMe(Middleware):
-    async def on_request(self, ctx: MiddlewareContext, call_next):
-        claims = get_access_token().claims
-        if claims.get("sub") not in ALLOWED_IDS:
-            raise PermissionError("unauthorized")
-        return await call_next(ctx)
-
-mcp = FastMCP(name="est",auth=auth,middleware=[OnlyMe()])
+MODE = os.environ.get("EST_MCP_AUTH_MODE")
+if MODE == "bearer":
+    # Bearerトークン認証
+    TOKEN = os.environ.get("EST_MCP_TOKEN")
+    if not TOKEN:
+        raise SystemExit("TOKEN undefined")
+    mcp = FastMCP(name="est", auth=StaticTokenVerifier({TOKEN: {"client_id": "est"}}))
+elif MODE == "github":
+    # GitHub OAuth認証
+    auth = GitHubProvider(
+        client_id=os.environ["GITHUB_CLIENT_ID"],
+        client_secret=os.environ["GITHUB_CLIENT_SECRET"],
+        base_url=os.environ["EST_MCP_BASE_URL"],
+        allowed_client_redirect_uris=os.environ["EST_MCP_REDIRECT_URIS"].split(","),
+    )
+    ALLOWED_IDS = set(os.environ["ALLOWED_GITHUB_IDS"].split(","))
+    class OnlyMe(Middleware):
+        async def on_request(self, ctx: MiddlewareContext, call_next):
+            claims = get_access_token().claims
+            if claims.get("sub") not in ALLOWED_IDS:
+                raise PermissionError("unauthorized")
+            return await call_next(ctx)
+    mcp = FastMCP(name="est", auth=auth, middleware=[OnlyMe()])
+else:
+    raise SystemExit(f"MODE Invalid")
 
 # ---実装---
 def _estcmd(*args: str) -> str:

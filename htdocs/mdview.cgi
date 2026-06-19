@@ -156,5 +156,6 @@ out=f"""<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
 {STYLE}
 {css}
 </style></head><body>{body}</body></html>"""
-sys.stdout.write("Content-Type: text/html;charset=UTF-8\r\n\r\n")
+sys.stdout.write("Content-Type: text/html;charset=UTF-8\r\nX-Content-Type-Options: nosniff\r\n"
+ "Content-Security-Policy: default-src 'none';img-src * data:;style-src 'unsafe-inline'\r\n\r\n")
 sys.stdout.write(out)
