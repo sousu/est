@@ -24,6 +24,11 @@ rel="" if path==BASE else os.path.relpath(path,BASE)  # ルートは空文字
 def url(p):  # /target相対パスをブラウザアクセス用URLへ(/が崩れないようsafe指定)
  return "/files/"+quote(p,safe="/")
 
+# 拡張子→アイコン絵文字(estの検索結果CSS res/css/est.css と同一)
+ICON={".pdf":"📕",".doc":"📘",".docx":"📘",".xls":"📗",".xlsx":"📗",
+ ".ppt":"📙",".pptx":"📙",".txt":"📄",".csv":"📄",".jtd":"📃",".msg":"✉️"}
+def ficon(name):return ICON.get(os.path.splitext(name)[1].lower(),"📄")
+
 # 配下を収集。隠しファイルは除外、シンボリックリンクで/target外へ出るものも除外
 dirs=[];files=[]
 for name in sorted(os.listdir(path),key=str.lower):
@@ -61,7 +66,7 @@ for name,st in dirs:
   f'<td class="sz"></td><td class="dt">{time.strftime("%Y-%m-%d %H:%M",time.localtime(st.st_mtime))}</td></tr>')
 for name,st in files:
  p=(rel+"/"+name) if rel else name
- rows.append(f'<tr><td class="ic">📄</td><td><a href="{html.escape(url(p),True)}">{html.escape(name)}</a></td>'
+ rows.append(f'<tr><td class="ic">{ficon(name)}</td><td><a href="{html.escape(url(p),True)}">{html.escape(name)}</a></td>'
   f'<td class="sz">{fsize(st.st_size)}</td><td class="dt">{time.strftime("%Y-%m-%d %H:%M",time.localtime(st.st_mtime))}</td></tr>')
 if not rows:rows.append('<tr><td></td><td class="empty">(空)</td><td></td><td></td></tr>')
 
