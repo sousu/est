@@ -74,7 +74,10 @@ title=html.escape(os.path.basename(rel) if rel else "target")
 STYLE="""
 body{font-size:14px;font-family:-apple-system,"Segoe UI","Helvetica Neue","Hiragino Sans","Noto Sans JP",sans-serif;
  line-height:1.6;color:#1f2328;max-width:900px;margin:0 auto;padding:24px 32px;}
+.hd{display:flex;align-items:center;justify-content:space-between;gap:12px;}
 h1{font-size:18px;font-weight:600;margin:0 0 4px;}
+.top{flex:none;font-size:13px;color:#0969da;text-decoration:none;white-space:nowrap;padding:4px 10px;border:1px solid #d0d7de;border-radius:6px;}
+.top:hover{background:#f6f8fa;}
 .crumb{font-size:13px;color:#59636e;margin-bottom:16px;word-break:break-all;}
 .crumb a{color:#0969da;text-decoration:none;}
 .crumb a:hover{text-decoration:underline;}
@@ -99,7 +102,7 @@ tr.up a{color:#59636e;}
 out=f"""<!DOCTYPE html><html lang="ja"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{title}</title><style>{STYLE}</style></head><body>
-<h1>{title}</h1>
+<div class="hd"><h1>{title}</h1><a class="top" href="/estseek.cgi">🔍 検索トップへ</a></div>
 <div class="crumb">{nav}</div>
 <table>{''.join(rows)}</table>
 </body></html>"""
